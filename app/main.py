@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.routers import github, stats
 from app.database import engine, Base
-from app.models import user
+from app.models import user, github_event
 
 
 Base.metadata.create_all(bind=engine)

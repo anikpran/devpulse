@@ -55,3 +55,4 @@ async def fetch_and_store_github_events(
     
     db.commit()
     return stored
+

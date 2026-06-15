@@ -7,6 +7,7 @@ from app.schemas.github import UserResponse, UserCreate
 from typing import List
 import httpx
 import os
+from app.services.github import fetch_and_store_github_events
 
 router = APIRouter()
 
@@ -91,4 +92,28 @@ async def github_callback(code: str, db: Session = Depends(get_db)):
         "username": user.username,
         "github_username": user.github_username,
         "access_token": access_token
+    }
+
+@router.post("/sync/{username}")
+async def sync_github_events(username: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.github_username == username).first()
+
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if not user.github_access_token:
+        raise HTTPException(status_code=400, detail="User has not connected GitHub")
+    
+    stored = await fetch_and_store_github_events(
+        username=user.github_username,
+        access_token=user.github_access_token,
+        user_id=user.id,
+        db=db
+    )
+
+
+    return {
+        "message": f"Synced successfully",
+        "events_stored": stored
     }

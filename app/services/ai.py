@@ -24,24 +24,25 @@ def generate_digest(
         "active_days": len(unique_dates),
         "repos": list(repos)
     }
+    try:
+        message = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=1024,
+            messages=[  
+            {
+                "role": "user",
+                "content": f"""Generate a short, encouraging weekly digest for a software engineer with this activity:
+                
+                Username: {summary['username']}
+                Current streak: {summary['streak']} days
+                Total pushes this week: {summary['total_pushes']}
+                Active coding days: {summary['active_days']} out of 7
+                Repos worked on: {', '.join(summary['repos'])}
 
-    message = client.messages.create(
-    model="claude-haiku-4-5-20251001",
-    max_tokens=1024,
-    messages=[
-        {
-            "role": "user",
-            "content": f"""Generate a short, encouraging weekly digest for a software engineer with this activity:
-            
-            Username: {summary['username']}
-            Current streak: {summary['streak']} days
-            Total pushes this week: {summary['total_pushes']}
-            Active coding days: {summary['active_days']} out of 7
-            Repos worked on: {', '.join(summary['repos'])}
-
-            Keep it to 3-4 sentences. Be specific, encouraging, and mention the streak."""
-        }
-        ]   
-    )
-
-    return message.content[0].text
+                Keep it to 3-4 sentences. Be specific, encouraging, and mention the streak."""
+            }
+            ]   
+        )
+        return message.content[0].text
+    except Exception:
+        return "Digest unavailable - API Credits needed"

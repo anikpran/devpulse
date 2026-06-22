@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 
-const API_BASE = 'http://localhost:8000'
+const API_BASE = 'https://devpulse-production-fb8a.up.railway.app'
 
 function App() {
   const [username, setUsername] = useState('')
